@@ -23,6 +23,7 @@ def get_authors_info(authors: list) -> list:
 def retrieve_women_papers(df):
     df['is_main_author_female'] = df['authors'].apply(lambda raw: is_main_author_female_(raw))
     df = df[df['is_main_author_female']]  # only keep papers where the main author is a women
+    df.drop(columns=['is_main_author_female'], inplace=True)
     df['females_authors'] = df['authors'].apply(lambda raw: get_authors_info(raw))
     df['female_ratio'] = df.apply(lambda x: len(x['females_authors']) / len(x['authors']) if len(x['authors']) > 0 else 0, axis=1)
     return df.sort_values(by=['published', 'female_ratio'], ascending=False)

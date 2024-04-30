@@ -34,6 +34,7 @@ def get_arxiv_publications(start_date: str = None, max_results: int = 100) -> pd
     df['authors'] = df['authors'].apply(extract_names)
     columns = ['link', 'published', 'title', 'summary', 'authors', 'category']
     df = df[columns]
+    df['source'] = 'arxiv'
 
     return df
 

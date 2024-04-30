@@ -21,6 +21,7 @@ def get_authors_info(authors: list) -> list:
 
 
 def retrieve_women_papers(df):
+    df = df.copy()
     df['is_main_author_female'] = df['authors'].apply(lambda raw: is_main_author_female_(raw))
     df = df[df['is_main_author_female']]  # only keep papers where the main author is a women
     df.drop(columns=['is_main_author_female'], inplace=True)

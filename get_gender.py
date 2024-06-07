@@ -2,6 +2,10 @@ import gender_guesser.detector as gender
 gd = gender.Detector()
 
 
+def rename_columns_title_case(col):
+    return col.replace('_', ' ').title()
+
+
 def is_main_author_female_(authors: list) -> bool:
     main_author_first_name = authors[0].split()[0]
     gender = gd.get_gender(main_author_first_name)
@@ -26,6 +30,8 @@ def retrieve_women_papers(df):
     df = df[df['is_main_author_female']]  # only keep papers where the main author is a women
     df.drop(columns=['is_main_author_female'], inplace=True)
     df['females_authors'] = df['authors'].apply(lambda raw: get_authors_info(raw))
-    df['female_ratio'] = df.apply(lambda x: len(x['females_authors']) / len(x['authors']) if len(x['authors']) > 0 else 0, axis=1)
+    df['female_ratio'] = df.apply(lambda x: len(x['females_authors']) / len(x['authors']) * 100 if len(x['authors']) > 0 else 0, axis=1)
+    df['female_ratio'] = df['female_ratio'].apply(lambda x: f'{x:.2f}%')
     df.drop(columns=['summary', 'category', 'source'], inplace=True)
-    return df.sort_values(by=['published', 'female_ratio'], ascending=False)
+    df.columns = [rename_columns_title_case(col) for col in df.columns]
+    return df.sort_values(by=['Published', 'Female Ratio'], ascending=False)

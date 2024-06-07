@@ -13,12 +13,12 @@ def extract_names(authors: list[dict]) -> list:
 
 
 def get_arxiv_publications(start_date: str = None, max_results: int = 100) -> pd.DataFrame:
-    '''
+    """
     Returns arxiv publications in a pandas dataframe.
     :param start_date: date to start looking for the papers from. The function will return the publications
     from the last 2 weeks of this date. Default: today()
     :param max_results: max number of publications to returns from the arxiv api.
-    '''
+    """
     arxiv_categories = '(cat:cs+OR+cat:stat.CO+cat:stat.ME+cat:stat.ML+cat:stat.TH)'
     # arXiv categories available here: https://arxiv.org/category_taxonomy
 
@@ -32,7 +32,8 @@ def get_arxiv_publications(start_date: str = None, max_results: int = 100) -> pd
     df["published"] = df["published"].apply(lambda x: datetime.fromisoformat(x[:-1]).astimezone(timezone.utc).date())
     df["category"] = df["arxiv_primary_category"].apply(lambda x: x['term'])
     df['authors'] = df['authors'].apply(extract_names)
-    columns = ['link', 'published', 'title', 'summary', 'authors', 'category']
+    df['title'] = df.apply(lambda row: f'<a href="{row["link"]}" target="_blank">{row["title"]}</a>', axis=1)
+    columns = ['published', 'title', 'summary', 'authors', 'category']
     df = df[columns]
     df['source'] = 'arxiv'
 

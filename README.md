@@ -26,8 +26,10 @@ Install the required libraries:
 ```pip install -r requirements.txt```
 
 ## Usage
-Run the script main.py to retrieve the latest research papers from Arxiv, written by women.
-```python main.py```
+Run the script app.py to start the Gradio application and retrieve the latest research papers published on Arxiv and 
+written by women:
+
+```python app.py```
 
 ## Acknowledgments
 This project was inspired by the need to promote gender diversity in academic research.

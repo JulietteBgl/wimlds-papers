@@ -1,15 +1,28 @@
 import feedparser
 from datetime import datetime, timedelta, timezone
 import pandas as pd
+import requests
 
 
-def extract_names(authors: list[dict]) -> list:
+def extract_names(input_data) -> list:
     """
-    Extracts authors names from the paper.
-    :param authors: authors names in a list of dict format
+    Extracts authors' names from the input data, which can be in different formats.
+    :param input_data: a list of dicts containing authors' names or a dict containing a list of authors.
     :return: list of authors' first and last names
     """
-    return [d['name'] for d in authors]
+    if isinstance(input_data, list):
+        # Case for arXiv format
+        return [author['name'] for author in input_data]
+    elif isinstance(input_data, dict) and 'authors' in input_data:
+        # Case for Hugging Face format
+        return [author['name'] for author in input_data['authors']]
+    else:
+        raise ValueError("Unsupported input format")
+
+
+def get_arxiv_link(paper):
+    arxiv_id = paper['id']
+    return f'https://arxiv.org/abs/{arxiv_id}'
 
 
 def get_arxiv_publications(start_date: str = None, max_results: int = 100) -> pd.DataFrame:
@@ -35,14 +48,38 @@ def get_arxiv_publications(start_date: str = None, max_results: int = 100) -> pd
     df['title'] = df.apply(lambda row: f'<a href="{row["link"]}" target="_blank">{row["title"]}</a>', axis=1)
     columns = ['published', 'title', 'summary', 'authors', 'category']
     df = df[columns]
-    df['source'] = 'arxiv'
+    df['source'] = 'Arxiv'
+
+    return df
+
+
+def get_hf_publications() -> pd.DataFrame:
+    """
+    Returns hugging face publications in a pandas dataframe.
+    :param start_date: date to start looking for the papers from. The function will return the publications
+    from the last 2 weeks of this date. Default: today()
+    :param max_results: max number of publications to returns from the arxiv api.
+    """
+
+    url_api = f'https://huggingface.co/api/daily_papers'
+    results = requests.get(url_api)
+    df = pd.DataFrame.from_dict(results.json())
+    df["published"] = df["publishedAt"].apply(lambda x: datetime.fromisoformat(x[:-1]).astimezone(timezone.utc).date())
+    df["category"] = 'Hugging Face Selection'
+    df['authors'] = df['paper'].apply(extract_names)
+    df['link'] = df['paper'].apply(get_arxiv_link)
+    df['title'] = df.apply(lambda row: f'<a href="{row["link"]}" target="_blank">{row["title"]}</a>', axis=1)
+    df['summary'] = df['paper'].apply(lambda paper: paper['summary'])
+    columns = ['published', 'title', 'summary', 'authors', 'category']
+    df = df[columns]
+    df['source'] = 'Hugging Face Selection'
 
     return df
 
 
 def get_papers(source, date_start=None):
-    if source == 'arxiv':
+    if source == 'Arxiv':
         publications = get_arxiv_publications(date_start)
     else:
-        publications = pd.DataFrame()
+        publications = get_hf_publications()
     return publications

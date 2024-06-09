@@ -21,7 +21,7 @@ In future releases, the tool will also propose:
 
 ## Installation
 Clone the repository:
-```git clone https://github.com/JulietteBgl/wilmds-papers.git```
+```git clone https://github.com/JulietteBgl/wimlds-papers.git```
 
 Install the required libraries:
 ```pip install -r requirements.txt```

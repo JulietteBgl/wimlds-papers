@@ -20,7 +20,12 @@ def extract_names(input_data) -> list:
         raise ValueError("Unsupported input format")
 
 
-def get_arxiv_link(paper):
+def get_arxiv_link(paper: dict) -> str:
+    """
+    Create the arxiv publication link based on the Arxiv publication id.
+    :param paper: dict containing paper info.
+    :return: link for the publication.
+    """
     arxiv_id = paper['id']
     return f'https://arxiv.org/abs/{arxiv_id}'
 
@@ -79,7 +84,8 @@ def get_hf_publications() -> pd.DataFrame:
 
 def get_papers(source, date_start=None):
     if source == 'Arxiv':
-        publications = get_arxiv_publications(date_start)
+        return get_arxiv_publications(date_start)
+    elif source == 'Hugging Face Selection':
+        return get_hf_publications()
     else:
-        publications = get_hf_publications()
-    return publications
+        raise ValueError("Source unknown")

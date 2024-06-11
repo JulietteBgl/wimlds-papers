@@ -3,6 +3,8 @@ from datetime import datetime, timedelta, timezone
 import pandas as pd
 import requests
 
+from constants import SOURCE_HF, SOURCE_ARXIV
+
 
 def extract_names(input_data) -> list:
     """
@@ -53,7 +55,7 @@ def get_arxiv_publications(start_date: str = None, max_results: int = 100) -> pd
     df['title'] = df.apply(lambda row: f'<a href="{row["link"]}" target="_blank">{row["title"]}</a>', axis=1)
     columns = ['published', 'title', 'summary', 'authors', 'category']
     df = df[columns]
-    df['source'] = 'Arxiv'
+    df['source'] = SOURCE_ARXIV
 
     return df
 
@@ -70,22 +72,22 @@ def get_hf_publications() -> pd.DataFrame:
     results = requests.get(url_api)
     df = pd.DataFrame.from_dict(results.json())
     df["published"] = df["publishedAt"].apply(lambda x: datetime.fromisoformat(x[:-1]).astimezone(timezone.utc).date())
-    df["category"] = 'Hugging Face Selection'
+    df["category"] = SOURCE_HF
     df['authors'] = df['paper'].apply(extract_names)
     df['link'] = df['paper'].apply(get_arxiv_link)
     df['title'] = df.apply(lambda row: f'<a href="{row["link"]}" target="_blank">{row["title"]}</a>', axis=1)
     df['summary'] = df['paper'].apply(lambda paper: paper['summary'])
     columns = ['published', 'title', 'summary', 'authors', 'category']
     df = df[columns]
-    df['source'] = 'Hugging Face Selection'
+    df['source'] = SOURCE_HF
 
     return df
 
 
 def get_papers(source, date_start=None):
-    if source == 'Arxiv':
+    if source == SOURCE_ARXIV:
         return get_arxiv_publications(date_start)
-    elif source == 'Hugging Face Selection':
+    elif source == SOURCE_HF:
         return get_hf_publications()
     else:
-        raise ValueError("Source unknown")
+        raise ValueError("Unknown Source")

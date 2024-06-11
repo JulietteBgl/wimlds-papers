@@ -1,4 +1,6 @@
 import gradio as gr
+
+from constants import SOURCE_ARXIV, SOURCE_HF
 from main import main
 
 wimlds_presentation = (
@@ -14,7 +16,7 @@ title_and_intro = (
 
 with gr.Blocks() as papers:
     gr.Markdown(title_and_intro)
-    inp = gr.Radio(choices=["Arxiv", "Hugging Face Selection"], value="Arxiv", label="Source")
+    inp = gr.Radio(choices=[SOURCE_ARXIV, SOURCE_HF], value=SOURCE_ARXIV, label="Source")
     btn = gr.Button("Search")
     out = gr.HTML()
     gr.Markdown(wimlds_presentation)

@@ -12,7 +12,7 @@ In future releases, the tool will also propose:
 
 ## Features
 - Retrieve latest research papers from Arxiv API and Hugging Face Daily Papers.
-- Extract author names from the retrieved papers.
+- Extract author's gender from the retrieved papers, based on their names or their avatar in their hugging face account.
 - Filter papers based on the gender of the main author.
 - Compute the ratio of women authors per paper.
 

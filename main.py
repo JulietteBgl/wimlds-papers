@@ -16,7 +16,7 @@ def main(source):
     :param source: one of 'Arxiv', 'Hugging Face Selection'
     :return: html dataframe
     """
-    arxiv_papers = get_papers(source)
-    df = retrieve_women_papers(arxiv_papers)
+    papers = get_papers(source)
+    df = retrieve_women_papers(papers)
     df_html = get_html_table(df)
     return df_html

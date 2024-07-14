@@ -1,2 +1,5 @@
 SOURCE_ARXIV = 'Arxiv'
 SOURCE_HF = 'Hugging Face Selection'
+
+MAX_RESULTS_ARXIV = 800
+MAX_LINES_DF = 20

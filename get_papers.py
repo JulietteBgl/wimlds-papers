@@ -1,9 +1,9 @@
 import feedparser
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 import pandas as pd
 import requests
 
-from constants import SOURCE_HF, SOURCE_ARXIV
+from constants import SOURCE_HF, SOURCE_ARXIV, MAX_RESULTS_ARXIV
 
 
 def extract_authors_info(input_data) -> list or tuple[list, list]:
@@ -34,20 +34,16 @@ def get_arxiv_link(paper: dict) -> str:
     return f'https://arxiv.org/abs/{arxiv_id}'
 
 
-def get_arxiv_publications(start_date: str = None, max_results: int = 100) -> pd.DataFrame:
+def get_arxiv_publications(max_results: int = 100) -> pd.DataFrame:
     """
     Returns arxiv publications in a pandas dataframe.
-    :param start_date: date to start looking for the papers from. The function will return the publications
     from the last 2 weeks of this date. Default: today()
     :param max_results: max number of publications to returns from the arxiv api.
     """
     arxiv_categories = '(cat:cs+OR+cat:stat.CO+cat:stat.ME+cat:stat.ML+cat:stat.TH)'
     # arXiv categories available here: https://arxiv.org/category_taxonomy
 
-    if not start_date:
-        start_date = (datetime.now() - timedelta(weeks=2)).strftime('%Y-%m-%d')
-
-    url_api = f'http://export.arxiv.org/api/query?search_query={arxiv_categories}+AND+submittedDate:[{start_date}+TO+9999999999999999]&start=0&max_results={max_results}'
+    url_api = f'http://export.arxiv.org/api/query?search_query={arxiv_categories}&start=0&max_results={max_results}&sortBy=lastUpdatedDate&sortOrder=descending'
     results = feedparser.parse(url_api)
 
     df = pd.DataFrame.from_dict(results.entries)
@@ -66,9 +62,6 @@ def get_arxiv_publications(start_date: str = None, max_results: int = 100) -> pd
 def get_hf_publications() -> pd.DataFrame:
     """
     Returns hugging face publications in a pandas dataframe.
-    :param start_date: date to start looking for the papers from. The function will return the publications
-    from the last 2 weeks of this date. Default: today()
-    :param max_results: max number of publications to returns from the arxiv api.
     """
 
     url_api = f'https://huggingface.co/api/daily_papers'
@@ -87,9 +80,9 @@ def get_hf_publications() -> pd.DataFrame:
     return df
 
 
-def get_papers(source, date_start=None):
+def get_papers(source):
     if source == SOURCE_ARXIV:
-        return get_arxiv_publications(date_start)
+        return get_arxiv_publications(max_results=MAX_RESULTS_ARXIV)
     elif source == SOURCE_HF:
         return get_hf_publications()
     else:

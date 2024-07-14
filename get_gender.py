@@ -59,12 +59,12 @@ def is_main_author_female_(authors: list, source: str, hf_profile_url: list) -> 
     return [False, 'Unknown']
 
 
-def get_authors_info(authors: list, source: str, hf_profile_url: list) -> list:
-    if hf_profile_url is None:
-        hf_profile_url = [None] * len(authors)
+def get_authors_info(authors: list, source: str, profile_url: list) -> list:
+    if profile_url is None:
+        profile_url = [None] * len(authors)
 
     females_authors = list()
-    for author, avatar in zip(authors, hf_profile_url):
+    for author, avatar in zip(authors, profile_url):
         first_name = author.split()[0]
         if get_gender_from_name(first_name) == 'Woman':
             females_authors.append(author)

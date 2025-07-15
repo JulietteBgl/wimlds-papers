@@ -22,7 +22,7 @@ def get_gender_from_name(first_name):
             gender = 'Man'
         else:
             # case for androgynous names or unknown names
-            gender = 'uUnknown'
+            gender = 'Unknown'
         return gender
 
     except Exception as e:

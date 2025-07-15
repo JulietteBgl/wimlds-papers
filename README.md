@@ -17,7 +17,7 @@ In future releases, the tool will also propose:
 - Compute the ratio of women authors per paper.
 
 ## Requirements
-- Python 3.x
+- Python 3.10
 
 ## Installation
 Clone the repository:
